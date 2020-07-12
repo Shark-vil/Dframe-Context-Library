@@ -1,18 +1,18 @@
 concommand.Add("golosovaniye", function()
-    local PanelManager = DFCL:New( "InfoPanelTest" )
-    PanelManager:AddMouseClickListener()
-    PanelManager:AddContextMenuListener()
+    local PanelManager = DFCL:New( "InfoPanelTest" )    -- Creating a Class Object
+    PanelManager:AddMouseClickListener()                -- Mouse listener activation
+    PanelManager:AddContextMenuListener()               -- Context menu listener activation
 
     local InfoPanel = vgui.Create( "DFrame" )
-    InfoPanel:MakePopup()
+    InfoPanel:MakePopup()                               -- This method must be called ALWAYS at the TOP
     InfoPanel:SetSize( 160, 250 )
     InfoPanel:SetPos( ScrW()/2 - 400, ScrH()/2 - 150 )
     InfoPanel:SetTitle( "ГОЛОСОВАНИЕ" )
     InfoPanel:SetSizable( false )
     InfoPanel:SetDraggable( true )
     InfoPanel:ShowCloseButton( true )
-    InfoPanel:SetKeyboardInputEnabled( false )
-    InfoPanel:SetMouseInputEnabled( false )
+    InfoPanel:SetKeyboardInputEnabled( false )          -- Manually disable keyboard focus
+    InfoPanel:SetMouseInputEnabled( false )             -- Manually disable mouse focus
     InfoPanel:SetVisible( true )
     InfoPanel.Paint = function( self, width, height )
         draw.RoundedBox( 0, 0, 0, width, height, Color(33,29,46,255) )
@@ -27,8 +27,9 @@ concommand.Add("golosovaniye", function()
         surface.DrawText( "GAY CLUB" )
     end
     InfoPanel.OnClose = function()
-        PanelManager:Destruct()
+        PanelManager:Destruct() -- Removing a class object after closing the panel
     end
+    -- Adding a panel to the list. The second parameter means - the main panel
     PanelManager:AddPanel( InfoPanel, true )
 
     local InfoTextPrint = vgui.Create( "DTextEntry" )
@@ -40,12 +41,12 @@ concommand.Add("golosovaniye", function()
         chat.AddText( self:GetValue() )
     end
     InfoTextPrint.OnMousePressed = function( self, keyCode )
-        PanelManager:AddIgnorePanel( self )
-        PanelManager:MakePopup()
-        PanelManager:PanelState( self, true, true )
-        PanelManager:RemoveIgnorePanel( self )
+        PanelManager:AddIgnorePanel( self )             -- Adding a panel to the ignore list
+        PanelManager:PanelState( self, true, true )     -- Panel state setting
+        PanelManager:MakePopup()                        -- Updating the state of all panels
+        PanelManager:RemoveIgnorePanel( self )          -- Removing a panel from an ignore list
     end
-    PanelManager:AddPanel( InfoTextPrint )
+    PanelManager:AddPanel( InfoTextPrint )  -- Adding a panel to the list
    
     local InfoButtonYes = vgui.Create( "DButton" )
     InfoButtonYes:SetParent( InfoPanel )
@@ -55,7 +56,7 @@ concommand.Add("golosovaniye", function()
     InfoButtonYes.DoClick = function ()
         InfoPanel:Close()
     end
-    PanelManager:AddPanel( InfoButtonYes )
+    PanelManager:AddPanel( InfoButtonYes )  -- Adding a panel to the list
    
     local InfoButtonNo = vgui.Create( "DButton" )
     InfoButtonNo:SetParent( InfoPanel )
@@ -65,5 +66,5 @@ concommand.Add("golosovaniye", function()
     InfoButtonNo.DoClick = function ()
         InfoPanel:Close()
     end
-    PanelManager:AddPanel( InfoButtonNo )
+    PanelManager:AddPanel( InfoButtonNo )   -- Adding a panel to the list
 end)
