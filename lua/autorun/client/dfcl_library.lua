@@ -80,9 +80,22 @@ function DFCL:New( ui_name )
         Description:
         Check that the panel is in the ignored list.
         --------------
-        @return (Boolean) - Return true if the panel is listed
+        @return (Boolean) - Returns true if the panel is in the ignored list
     --]]
     function public:IsIgnorePanel( panel )
+        if ( table.HasValue( private.ignorePanels, panel ) ) then
+            return true;
+        end;
+        return false;
+    end;
+
+    --[[
+        Description:
+        Get a list of ignored objects.
+        --------------
+        @return (Panel[]) - List of ignore panel objects
+    --]]
+    function public:GetIgnorePanels()
         if ( table.HasValue( private.ignorePanels, panel ) ) then
             return true;
         end;
