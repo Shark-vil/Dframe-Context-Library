@@ -1,7 +1,7 @@
 concommand.Add("golosovaniye", function()
-    local PanelManager = DFCL:New( "InfoPanelTest" );
-    PanelManager:AddMouseClickListener();
-    PanelManager:AddContextMenuListener();
+    local PanelManager = DFCL:New( "InfoPanelTest" )
+    PanelManager:AddMouseClickListener()
+    PanelManager:AddContextMenuListener()
 
     local InfoPanel = vgui.Create( "DFrame" )
     InfoPanel:MakePopup()
@@ -27,9 +27,9 @@ concommand.Add("golosovaniye", function()
         surface.DrawText( "GAY CLUB" )
     end
     InfoPanel.OnClose = function()
-        PanelManager:Destruct();
+        PanelManager:Destruct()
     end
-    PanelManager:AddPanel( InfoPanel, true );
+    PanelManager:AddPanel( InfoPanel, true )
 
     local InfoTextPrint = vgui.Create( "DTextEntry" )
     InfoTextPrint:SetParent( InfoPanel )
@@ -40,12 +40,12 @@ concommand.Add("golosovaniye", function()
         chat.AddText( self:GetValue() )
     end
     InfoTextPrint.OnMousePressed = function( self, keyCode )
-        PanelManager:AddIgnorePanel( self );
-        PanelManager:MakePopup();
-        PanelManager:PanelState( self, true, true );
-        PanelManager:RemoveIgnorePanel( self );
+        PanelManager:AddIgnorePanel( self )
+        PanelManager:MakePopup()
+        PanelManager:PanelState( self, true, true )
+        PanelManager:RemoveIgnorePanel( self )
     end
-    PanelManager:AddPanel( InfoTextPrint );
+    PanelManager:AddPanel( InfoTextPrint )
    
     local InfoButtonYes = vgui.Create( "DButton" )
     InfoButtonYes:SetParent( InfoPanel )
@@ -55,7 +55,7 @@ concommand.Add("golosovaniye", function()
     InfoButtonYes.DoClick = function ()
         InfoPanel:Close()
     end
-    PanelManager:AddPanel( InfoButtonYes );
+    PanelManager:AddPanel( InfoButtonYes )
    
     local InfoButtonNo = vgui.Create( "DButton" )
     InfoButtonNo:SetParent( InfoPanel )
@@ -65,5 +65,5 @@ concommand.Add("golosovaniye", function()
     InfoButtonNo.DoClick = function ()
         InfoPanel:Close()
     end
-    PanelManager:AddPanel( InfoButtonNo );
+    PanelManager:AddPanel( InfoButtonNo )
 end)
