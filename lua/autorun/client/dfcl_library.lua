@@ -232,27 +232,11 @@ function DFCL:New( ui_name )
         @param (Boolean) keyboard_state - Keyboard activity status
         @param (Boolean) mouse_state - Mouse activity status
     --]]
-    function public:PanelAllState( keyboard_state, mouse_state, ignorePanels )
+    function public:PanelAllState( keyboard_state, mouse_state )
         for _, panel in pairs( private.panels ) do
 
             if ( self:IsIgnorePanel( panel ) ) then
                 continue;
-            end;
-
-            if ( ignorePanels ~= nil ) then
-                if ( ispanel( ignorePanels ) ) then
-                    
-                    if ( ignorePanels == panel ) then
-                        continue;
-                    end;
-
-                elseif ( istable( ignorePanels ) ) then
-
-                    if ( table.HasValue( ignorePanels, panel ) ) then
-                        continue;
-                    end;
-
-                end;
             end;
 
             panel:SetKeyboardInputEnabled( keyboard_state );
