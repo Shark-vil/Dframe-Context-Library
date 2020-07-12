@@ -14,7 +14,7 @@ function DFCL:New( ui_name )
     private.ignorePanels = {};  -- Ignored panels when setting states
     private.eventName = ui_name .. "_" .. tostring( SysTime() );    -- Unique name for hooks
     private.contextMenuState = false;   -- Context menu status
-    private.MakePopup = true;  -- Disables the state update method if true
+    private.MakePopup = true;  -- Disables the state update method if false
 
     -- Public fields
     local public = {};
