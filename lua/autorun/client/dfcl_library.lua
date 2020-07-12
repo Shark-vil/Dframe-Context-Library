@@ -111,10 +111,7 @@ function DFCL:New( ui_name )
         @return (Panel[]) - List of ignore panel objects
     --]]
     function public:GetIgnorePanels()
-        if ( table.HasValue( private.ignorePanels, panel ) ) then
-            return true;
-        end;
-        return false;
+        return private.ignorePanels;
     end;
 
     --[[

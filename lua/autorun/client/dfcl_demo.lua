@@ -40,8 +40,10 @@ concommand.Add("golosovaniye", function()
         chat.AddText( self:GetValue() )
     end
     InfoTextPrint.OnMousePressed = function( self, keyCode )
+        PanelManager:AddIgnorePanel( self );
         PanelManager:MakePopup();
-        PanelManager:PanelState( true, true );
+        PanelManager:PanelState( self, true, true );
+        PanelManager:RemoveIgnorePanel( self );
     end
     PanelManager:AddPanel( InfoTextPrint );
    
