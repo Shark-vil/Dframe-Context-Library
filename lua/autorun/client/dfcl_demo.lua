@@ -1,37 +1,7 @@
 concommand.Add("golosovaniye", function()
-    local RegisterUI = {}
-    local ContextMenuIsOpen = false
-    local HookEventName = "InfoPanel_" .. tostring( SysTime() );
-
-    local function PanelsState( keyboard_state, mouse_state, selectPanel, isIgnore )
-        if ( selectPanel == nil ) then
-            for _, panel in pairs( RegisterUI ) do
-                if ( isIgnore ~= nil and isIgnore == true ) then
-                    if ( ispanel( selectPanel ) ) then
-                        if ( selectPanel == panel ) then
-                            continue
-                        end
-                    elseif ( istable( selectPanel ) ) then
-                        if ( table.HasValue( selectPanel, panel ) ) then
-                            continue
-                        end;
-                    end
-                end
-                panel:SetKeyboardInputEnabled( keyboard_state )
-                panel:SetMouseInputEnabled( mouse_state )
-            end;
-        else
-            if ( ispanel( selectPanel ) ) then
-                selectPanel:SetKeyboardInputEnabled( keyboard_state )
-                selectPanel:SetMouseInputEnabled( mouse_state )
-            elseif ( istable( selectPanel ) ) then
-                for _, panel in pairs( selectPanel ) do
-                    panel:SetKeyboardInputEnabled( keyboard_state )
-                    panel:SetMouseInputEnabled( mouse_state )
-                end
-            end
-        end
-    end
+    local PanelManager = DFCL:New( "InfoPanelTest" );
+    PanelManager:AddMouseClickListener();
+    PanelManager:AddContextMenuListener();
 
     local InfoPanel = vgui.Create( "DFrame" )
     InfoPanel:MakePopup()
@@ -57,11 +27,9 @@ concommand.Add("golosovaniye", function()
         surface.DrawText( "GAY CLUB" )
     end
     InfoPanel.OnClose = function()
-        hook.Remove( "GUIMouseReleased", HookEventName )
-        hook.Remove( "OnContextMenuOpen", HookEventName )
-        hook.Remove( "OnContextMenuClose", HookEventName )
+        PanelManager:Destruct();
     end
-    table.insert( RegisterUI, InfoPanel )
+    PanelManager:AddPanel( InfoPanel, true );
 
     local InfoTextPrint = vgui.Create( "DTextEntry" )
     InfoTextPrint:SetParent( InfoPanel )
@@ -72,9 +40,10 @@ concommand.Add("golosovaniye", function()
         chat.AddText( self:GetValue() )
     end
     InfoTextPrint.OnMousePressed = function( self, keyCode )
-        PanelsState( true, true );
+        PanelManager:MakePopup();
+        PanelManager:PanelState( true, true );
     end
-    table.insert( RegisterUI, InfoTextPrint )
+    PanelManager:AddPanel( InfoTextPrint );
    
     local InfoButtonYes = vgui.Create( "DButton" )
     InfoButtonYes:SetParent( InfoPanel )
@@ -84,7 +53,7 @@ concommand.Add("golosovaniye", function()
     InfoButtonYes.DoClick = function ()
         InfoPanel:Close()
     end
-    table.insert( RegisterUI, InfoButtonYes )
+    PanelManager:AddPanel( InfoButtonYes );
    
     local InfoButtonNo = vgui.Create( "DButton" )
     InfoButtonNo:SetParent( InfoPanel )
@@ -94,18 +63,5 @@ concommand.Add("golosovaniye", function()
     InfoButtonNo.DoClick = function ()
         InfoPanel:Close()
     end
-    table.insert( RegisterUI, InfoButtonNo )
-
-    hook.Add( "GUIMouseReleased", HookEventName, function( mouseCode, aimVector )
-        InfoPanel:MakePopup()
-        PanelsState( false, true );
-    end );
-    hook.Add( "OnContextMenuOpen", HookEventName, function()
-        PanelsState( false, true );
-        ContextMenuIsOpen = true;
-    end );
-    hook.Add( "OnContextMenuClose", HookEventName, function()
-        PanelsState( false, false );
-        ContextMenuIsOpen = false;
-    end );
+    PanelManager:AddPanel( InfoButtonNo );
 end)
