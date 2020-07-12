@@ -13,7 +13,8 @@ function DFCL:New( ui_name )
     private.panels = {};        -- All registered panels                                   
     private.ignorePanels = {};  -- Ignored panels when setting states
     private.eventName = ui_name .. "_" .. tostring( SysTime() );    -- Unique name for hooks
-    private.contextMenuState = false; -- Context menu status
+    private.contextMenuState = false;   -- Context menu status
+    private.MakePopup = true;  -- Disables the state update method if true
 
     -- Public fields
     local public = {};
@@ -30,9 +31,43 @@ function DFCL:New( ui_name )
 
     --[[
         Description:
+        Sets whether to update the state through the main method or not.
+        --------------
+        @param (Boolean) status - Turns on the MakePopup if true
+    --]]
+    function public:EnableMakePopup( status )
+        private.MakePopup = status;
+    end;
+
+    --[[
+        Description:
+        Returns the state of keystrokes (abbreviated method).
+        --------------
+        @param (Boolean) status - Will return the true if there is focus
+    --]]
+    function public:GetKeyboardState( panel )
+        return panel:IsKeyboardInputEnabled();
+    end;
+
+    --[[
+        Description:
+        Returns the state of mouse clicks (shortened method).
+        --------------
+        @param (Boolean) status - Will return the true if there is focus
+    --]]
+    function public:GetMouseState( panel )
+        return panel:IsMouseInputEnabled();
+    end;
+
+    --[[
+        Description:
         Focuses the main panel and all the dependencies.
     --]]
     function public:MakePopup()
+        if ( not private.MakePopup ) then
+            return;
+        end;
+
         local IgnoreStates = {};
 
         for _, panel in pairs( self:GetIgnorePanels() ) do
@@ -88,6 +123,10 @@ function DFCL:New( ui_name )
         @param (Panel) panel - A panel object
     --]]
     function public:AddIgnorePanel( panel )
+        if ( table.HasValue( private.ignorePanels, panel ) ) then
+            return;
+        end;
+        
         table.insert( private.ignorePanels, panel );
     end;
 
@@ -121,9 +160,9 @@ function DFCL:New( ui_name )
         @param (Panel) panel - A panel object
     --]]
     function public:RemoveIgnorePanel( panel )
-        for i = 1, table.Count( private.panels ) do
-            if ( private.panels[ i ] == panel ) then
-                table.remove( private.panels, i );
+        for i = 1, table.Count( private.ignorePanels ) do
+            if ( private.ignorePanels[ i ] == panel ) then
+                table.remove( private.ignorePanels, i );
                 break;
             end;
         end;
