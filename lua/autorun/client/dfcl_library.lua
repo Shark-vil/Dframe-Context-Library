@@ -33,7 +33,22 @@ function DFCL:New( ui_name )
         Focuses the main panel and all the dependencies.
     --]]
     function public:MakePopup()
+        local IgnoreStates = {};
+
+        for _, panel in pairs( self:GetIgnorePanels() ) do
+            local data = {
+                object = panel,
+                keyboardState = panel:IsKeyboardInputEnabled(),
+                mouseState = panel:IsMouseInputEnabled()
+            };
+            table.insert( IgnoreStates, panel );
+        end;
+
         private.mainPanel:MakePopup();
+
+        for _, data in pairs( IgnoreStates ) do
+            self:PanelState( data.object, data.keyboardState, data.mouseState );
+        end;
     end;
 
     --[[
@@ -150,10 +165,6 @@ function DFCL:New( ui_name )
             return;
         end;
 
-        if ( self:IsIgnorePanel( panel ) ) then
-            return;
-        end;
-
         panel:SetKeyboardInputEnabled( keyboard_state );
         panel:SetMouseInputEnabled( mouse_state );
     end;
@@ -169,10 +180,6 @@ function DFCL:New( ui_name )
     function public:PanelsState( panels, keyboard_state, mouse_state )
         for _, panel in pairs( panels ) do
             if ( not table.HasValue( private.panels, panel ) ) then
-                continue;
-            end;
-
-            if ( self:IsIgnorePanel( panel ) ) then
                 continue;
             end;
 
