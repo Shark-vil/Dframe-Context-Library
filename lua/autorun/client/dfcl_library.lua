@@ -231,7 +231,7 @@ function DFCL:New( ui_name )
     --]]
     function public:AddMouseClickListener()
         hook.Add( "GUIMouseReleased", private.eventName, function( mouseCode, aimVector )
-            private.mainPanel:MakePopup();
+            public:MakePopup();
             public:PanelAllState( false, true );
         end );
     end;
