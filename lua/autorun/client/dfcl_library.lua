@@ -291,7 +291,10 @@ function DFCL:New( ui_name )
     --]]
     function public:AddContextMenuListener()
         hook.Add( "OnContextMenuOpen", private.eventName, function()
-            public:PanelAllState( false, true );
+            timer.Simple( 0.1, function()
+                public:MakePopup();
+                public:PanelAllState( false, true );
+            end );
             private.contextMenuState = true;
         end );
     
