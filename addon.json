@@ -1,0 +1,17 @@
+{ 
+	"title"		:	"[DFCL] DFrame Context Menu Library", 
+	"type"		:	"tool", 
+	"tags"		:	[ "fun", "build" ], 
+	"ignore"	: 
+	[ 
+		"*.psd*", 
+		"*.vcproj*", 
+		"*.svn*",
+		"*.git*",
+		"*.code-workspace*",
+		"LICENSE",
+		"README.md",
+		"lua/autorun/client/dfcl_demo.lua",
+		"lua/autorun/client/dfcl_demo2.lua"
+	]
+} 
