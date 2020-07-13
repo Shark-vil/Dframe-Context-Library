@@ -11,7 +11,7 @@ function PANEL:Init()
 
     self.PanelManager:AddPanel( self, true );
 
-    timer.Simple( 0.1, function()
+    timer.Simple( 0.3, function()
 
         local panels = self:GetChildren();
 
