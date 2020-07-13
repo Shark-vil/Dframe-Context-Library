@@ -1,41 +1,75 @@
-local PANEL = {};
-local PanelManager;
+local PANEL = {
+    PanelManager = nil
+};
 
 function PANEL:Init()
 
-    PanelManager = DFCL:New( self:GetName() );
+    self.PanelManager = DFCL:New( self:GetName() );
 
-    PanelManager:AddMouseClickListener();
-    PanelManager:AddContextMenuListener();
+    self.PanelManager:AddMouseClickListener();
+    self.PanelManager:AddContextMenuListener();
 
-    PanelManager:AddPanel( self, true );
+    self.PanelManager:AddPanel( self, true );
 
     timer.Simple( 0.1, function()
 
         local panels = self:GetChildren();
 
         for _, panel in pairs( panels ) do
-            PanelManager:AddPanel( panel );
+            self.PanelManager:AddPanel( panel );
         end;
 
     end );
 
 end;
 
+function PANEL:ChildSync( sync_time )
+
+    sync_time = sync_time or 1;
+    
+    local SyncEventName = self.PanelManager:GetEventName() .. "_ChildrenSync";
+
+    timer.Create( SyncEventName, sync_time, 0, function()
+
+        if ( not IsValid( self ) ) then return; end;
+
+        local panels = self:GetChildren();
+        local panelsExists = self.PanelManager:GetPanels();
+        
+        for _, panel in pairs( panels ) do
+            if ( not table.HasValue( panelsExists, panel ) ) then
+                self.PanelManager:AddPanel( panel );
+            end;
+        end;
+
+    end );
+
+    hook.Add( "DFCL_Destruct", SyncEventName, function( eventName )
+
+        if ( timer.Exists( SyncEventName ) ) then
+            timer.Remove( SyncEventName );
+        end;
+
+        hook.Remove( "DFCL_Destruct", SyncEventName );
+
+    end );
+
+end;
+
 function PANEL:GetPanelManager()
-    return PanelManager;
+    return self.PanelManager;
 end;
 
 function PANEL:Destruct()
-    PanelManager:Destruct();
+    self.PanelManager:Destruct();
 end;
 
 function PANEL:OnClose()
-    PanelManager:Destruct();
+    self.PanelManager:Destruct();
 end;
 
 function PANEL:OnRemove()
-    PanelManager:Destruct();
+    self.PanelManager:Destruct();
 end;
 
 vgui.Register( "DFrameContext", PANEL, "DFrame" )

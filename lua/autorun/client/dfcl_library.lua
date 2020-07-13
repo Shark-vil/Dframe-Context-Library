@@ -262,6 +262,8 @@ function DFCL:New( ui_name )
         self:RemoveMouseClickListener();
         self:RemoveContextMenuListener();
 
+        hook.Run( "DFCL_Destruct", private.eventName );
+
         self = nil;
     end;
 
