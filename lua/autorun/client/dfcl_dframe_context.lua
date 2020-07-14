@@ -30,6 +30,8 @@ end;
 --[[
     Description:
     Activates the synchronization of the panel manager and the children of the main panel
+    --------------
+    @param (Float : 1) sync_time - Sync refresh rate in seconds
 --]]
 function PANEL:ChildSync( sync_time )
 
