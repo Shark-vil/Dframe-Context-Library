@@ -96,7 +96,7 @@ end;
     @param (Panel) panel - A panel object
 --]]
 function PANEL:AddFocusPanel( panel )
-    self.PanelManager:AddFocusPanel( panelName );
+    self.PanelManager:AddFocusPanel( panel );
 end;
 
 --[[
@@ -106,7 +106,7 @@ end;
     @param (Panel) panel - A panel object
 --]]
 function PANEL:RemoveFocusPanel( panel )
-    self.PanelManager:RemoveFocusPanel( panelName );
+    self.PanelManager:RemoveFocusPanel( panel );
 end;
 
 --[[
