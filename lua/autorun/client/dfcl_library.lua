@@ -6,6 +6,8 @@ DFCL = {};
 --]]
 function DFCL:New( ui_name )
 
+    ui_name = string.Replace( ui_name, ' ', '' );
+
     -- Private fields
     local private = {};
     
@@ -262,7 +264,7 @@ function DFCL:New( ui_name )
         self:RemoveMouseClickListener();
         self:RemoveContextMenuListener();
 
-        hook.Run( "DFCL_Destruct", private.eventName );
+        hook.Run( "DFCL_Destruct_" .. private.eventName );
 
         self = nil;
     end;

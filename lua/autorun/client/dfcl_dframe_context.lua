@@ -37,7 +37,8 @@ function PANEL:ChildSync( sync_time )
 
     sync_time = sync_time or 1;
     
-    local SyncEventName = self.PanelManager:GetEventName() .. "_ChildrenSync";
+    local PanelEventName = self.PanelManager:GetEventName();
+    local SyncEventName = PanelEventName .. "_ChildrenSync";
 
     timer.Create( SyncEventName, sync_time, 0, function()
 
@@ -54,13 +55,13 @@ function PANEL:ChildSync( sync_time )
 
     end );
 
-    hook.Add( "DFCL_Destruct", SyncEventName, function( eventName )
+    hook.Add( "DFCL_Destruct_" .. PanelEventName, SyncEventName, function()
 
         if ( timer.Exists( SyncEventName ) ) then
             timer.Remove( SyncEventName );
         end;
 
-        hook.Remove( "DFCL_Destruct", SyncEventName );
+        hook.Remove( "DFCL_Destruct_" .. PanelEventName, SyncEventName );
 
     end );
 
