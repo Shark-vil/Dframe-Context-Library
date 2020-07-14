@@ -67,6 +67,47 @@ function PANEL:ChildSync( sync_time )
 
 end;
 
+--[[
+    Description:
+    Adds focus tracking for a panel group with the specified name.
+    If the context menu closes, the focus will return, provided that it was previously.
+    --------------
+    @param (String) panelName - Panel name (Example: "DTextEntry")
+--]]
+function PANEL:AddFocusName( panelName )
+    self.PanelManager:AddFocusName( panelName );
+end;
+
+--[[
+    Description:
+    Deletes focus tracking for a panel group.
+    --------------
+    @param (String) panelName - Panel name (Example: "DTextEntry")
+--]]
+function PANEL:RemoveFocusName( panelName )
+    self.PanelManager:RemoveFocusName( panelName );
+end;
+
+--[[
+    Description:
+    Adds focus tracking for a panel. If the context menu closes,
+        the focus will return, provided that it was previously.
+    --------------
+    @param (Panel) panel - A panel object
+--]]
+function PANEL:AddFocusPanel( panel )
+    self.PanelManager:AddFocusPanel( panelName );
+end;
+
+--[[
+    Description:
+    Deletes focus tracking for a panel.
+    --------------
+    @param (Panel) panel - A panel object
+--]]
+function PANEL:RemoveFocusPanel( panel )
+    self.PanelManager:RemoveFocusPanel( panelName );
+end;
 
 --[[
     Description:
