@@ -2,6 +2,10 @@ local PANEL = {
     PanelManager = nil
 };
 
+--[[
+    Description:
+    Panel manager initialization
+--]]
 function PANEL:Init()
 
     self.PanelManager = DFCL:New( self:GetName() );
@@ -23,6 +27,10 @@ function PANEL:Init()
 
 end;
 
+--[[
+    Description:
+    Activates the synchronization of the panel manager and the children of the main panel
+--]]
 function PANEL:ChildSync( sync_time )
 
     sync_time = sync_time or 1;
@@ -56,18 +64,43 @@ function PANEL:ChildSync( sync_time )
 
 end;
 
+
+--[[
+    Description:
+    Returns the panel manager
+    --------------
+    @return (Metatable) - Meta table panel manager
+--]]
 function PANEL:GetPanelManager()
     return self.PanelManager;
 end;
 
+--[[
+    Description:
+    Destroys the panel manager and all its dependencies
+--]]
 function PANEL:Destruct()
     self.PanelManager:Destruct();
 end;
 
+--[[
+    Description:
+    Destroys the panel manager and all its dependencies when closing the panel
+
+    WARNING:
+    When overloaded, the method will have to be called manually.
+--]]
 function PANEL:OnClose()
     self.PanelManager:Destruct();
 end;
 
+--[[
+    Description:
+    Destroys the panel manager and all its dependencies when removing a panel
+
+    WARNING:
+    When overloaded, the method will have to be called manually.
+--]]
 function PANEL:OnRemove()
     self.PanelManager:Destruct();
 end;
