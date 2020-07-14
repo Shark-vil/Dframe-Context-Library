@@ -3,6 +3,9 @@ concommand.Add("enter_the_locker_room", function()
     PanelManager:AddMouseClickListener()    -- Mouse listener activation
     PanelManager:AddContextMenuListener()   -- Context menu listener activation
 
+    -- Maintains focus on the panel after closing the context menu (If there was focus before).
+    PanelManager:AddFocusName( "DTextEntry" );
+
     local InfoPanel = vgui.Create( "DFrame" )
     InfoPanel:MakePopup()   -- This method must be called ALWAYS at the TOP
     InfoPanel:SetSize( 160, 250 )
@@ -39,6 +42,9 @@ concommand.Add("enter_the_locker_room", function()
     InfoTextPrint:SetValue( "Oh shit, I'm sorry." )
     InfoTextPrint.OnEnter = function( self )
         chat.AddText( self:GetValue() )
+        
+        -- Reset panel states so that the mouse and keyboard are not locked.
+        PanelManager:PanelStateReset()
     end
     InfoTextPrint.OnMousePressed = function( self, keyCode )
         PanelManager:AddIgnorePanel( self )             -- Adding a panel to the ignore list

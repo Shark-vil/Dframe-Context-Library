@@ -12,7 +12,9 @@ function DFCL:New( ui_name )
     local private = {};
     
     private.mainPanel = {};     -- Main panel
-    private.panels = {};        -- All registered panels                                   
+    private.panels = {};        -- All registered panels
+    private.focusPanels = {};   -- List of focus tracking panels
+    private.focusNames = {};    -- List of focus tracking panels name
     private.ignorePanels = {};  -- Ignored panels when setting states
     private.eventName = ui_name .. "_" .. tostring( SysTime() );    -- Unique name for hooks
     private.contextMenuState = false;   -- Context menu status
@@ -96,6 +98,8 @@ function DFCL:New( ui_name )
         @param (Boolean : false) isMainPanel - Is this the main panel or not
     --]]
     function public:AddPanel( panel, isMainPanel )
+        if ( not IsValid( panel ) ) then return; end;
+
         if ( isMainPanel ~= nil and isMainPanel ) then
             private.mainPanel = panel;
         end;
@@ -113,6 +117,75 @@ function DFCL:New( ui_name )
         for i = 1, table.Count( private.panels ) do
             if ( private.panels[ i ] == panel ) then
                 table.remove( private.panels, i );
+                break;
+            end;
+        end;
+    end;
+
+    --[[
+        Description:
+        Adds focus tracking for a panel group with the specified name.
+        If the context menu closes, the focus will return, provided that it was previously.
+        --------------
+        @param (String) panelName - Panel name (Example: "DTextEntry")
+    --]]
+    function public:AddFocusName( panelName )
+        table.insert( private.focusNames, panelName );
+    end;
+
+    --[[
+        Description:
+        Deletes focus tracking for a panel group.
+        --------------
+        @param (String) panelName - Panel name (Example: "DTextEntry")
+    --]]
+    function public:RemoveFocusName( panelName )
+        for i = 1, table.Count( private.focusNames ) do
+            if ( private.focusNames[ i ] == panelName ) then
+                table.remove( private.focusNames, i );
+                break;
+            end;
+        end;
+    end;
+
+    --[[
+        Description:
+        Forcibly trying to set focus on the panel.
+        --------------
+        @param (Panel) panel - A panel object
+    --]]
+    function public:SetFocusPanel( panel )
+
+        self:AddIgnorePanel( panel );
+        self:MakePopup();
+        panel:RequestFocus();
+        self:RemoveIgnorePanel( panel );
+
+    end;
+
+    --[[
+        Description:
+        Adds focus tracking for a panel. If the context menu closes,
+            the focus will return, provided that it was previously.
+        --------------
+        @param (Panel) panel - A panel object
+    --]]
+    function public:AddFocusPanel( panel )
+        if ( not IsValid( panel ) ) then return; end;
+        
+        table.insert( private.focusPanels, panel );
+    end;
+
+    --[[
+        Description:
+        Deletes focus tracking for a panel.
+        --------------
+        @param (Panel) panel - A panel object
+    --]]
+    function public:RemoveFocusPanel( panel )
+        for i = 1, table.Count( private.focusPanels ) do
+            if ( private.focusPanels[ i ] == panel ) then
+                table.remove( private.focusPanels, i );
                 break;
             end;
         end;
@@ -199,6 +272,8 @@ function DFCL:New( ui_name )
         @param (Boolean) mouse_state - Mouse activity status
     --]]
     function public:PanelState( panel, keyboard_state, mouse_state )
+        if ( not IsValid( panel ) ) then return; end;
+
         if ( not table.HasValue( private.panels, panel ) ) then
             return;
         end;
@@ -217,6 +292,8 @@ function DFCL:New( ui_name )
     --]]
     function public:PanelsState( panels, keyboard_state, mouse_state )
         for _, panel in pairs( panels ) do
+            if ( not IsValid( panel ) ) then continue; end;
+
             if ( not table.HasValue( private.panels, panel ) ) then
                 continue;
             end;
@@ -236,6 +313,7 @@ function DFCL:New( ui_name )
     --]]
     function public:PanelAllState( keyboard_state, mouse_state )
         for _, panel in pairs( private.panels ) do
+            if ( not IsValid( panel ) ) then continue; end;
 
             if ( self:IsIgnorePanel( panel ) ) then
                 continue;
@@ -244,6 +322,15 @@ function DFCL:New( ui_name )
             panel:SetKeyboardInputEnabled( keyboard_state );
             panel:SetMouseInputEnabled( mouse_state );
         end;
+    end;
+
+    --[[
+        Description:
+        Resets the state of panels.
+    --]]
+    function public:PanelStateReset()
+        self:MakePopup();
+        self:PanelAllState( false, false );
     end;
 
     --[[
@@ -271,12 +358,36 @@ function DFCL:New( ui_name )
 
     --[[
         Description:
+        Calls the destruction method if the menu does not exist.
+        --------------
+        @return (Boolean) - Will return the true in case of destruction
+    --]]
+    function public:DestructInvalidMenu()
+        
+        if ( not IsValid( private.mainPanel ) ) then
+            self:Destruct();
+            return true;
+        end;
+
+        return false;
+
+    end;
+
+    --[[
+        Description:
         Adds a mouse click listener to control the state of panels.
     --]]
     function public:AddMouseClickListener()
         hook.Add( "GUIMouseReleased", private.eventName, function( mouseCode, aimVector )
-            public:MakePopup();
-            public:PanelAllState( false, true );
+
+            if ( public:DestructInvalidMenu() ) then return; end;
+
+            if ( private.contextMenuState ) then
+                public:MakePopup();
+                public:PanelAllState( false, true );
+            else
+                public:PanelStateReset();
+            end;
         end );
     end;
 
@@ -295,16 +406,51 @@ function DFCL:New( ui_name )
     --]]
     function public:AddContextMenuListener()
         hook.Add( "OnContextMenuOpen", private.eventName, function()
+            
+            if ( public:DestructInvalidMenu() ) then return; end;
+
             timer.Simple( 0.1, function()
                 public:MakePopup();
                 public:PanelAllState( false, true );
             end );
+            
             private.contextMenuState = true;
+
         end );
     
         hook.Add( "OnContextMenuClose", private.eventName, function()
-            public:PanelAllState( false, false );
+
+            if ( public:DestructInvalidMenu() ) then return; end;
+
+            local focusPanels = {};
+
+            for _, panel in pairs( private.focusPanels ) do
+                if ( not IsValid( panel ) or not panel:HasFocus() ) then 
+                    continue; 
+                end;
+
+                table.insert( focusPanels, panel );
+            end;
+
+            for _, panel in pairs( private.panels ) do
+                if ( not IsValid( panel ) or not panel:HasFocus() ) then 
+                    continue; 
+                end;
+
+                if ( table.HasValue( private.focusNames, panel:GetName() ) ) then
+                    table.insert( focusPanels, panel );
+                end;
+            end;
+
+            public:PanelStateReset()
             private.contextMenuState = false;
+
+            timer.Simple( 0.1, function()
+                for _, panel in pairs( focusPanels ) do
+                    public:SetFocusPanel( panel );
+                end;
+            end );
+
         end );
     end;
 
