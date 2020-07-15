@@ -40,10 +40,7 @@ concommand.Add("enter_the_locker_room_2", function()
         PanelManager:PanelStateReset()
     end
     InfoTextPrint.OnMousePressed = function( self, keyCode )
-        PanelManager:AddIgnorePanel( self )             -- Adding a panel to the ignore list
-        PanelManager:PanelState( self, true, true )     -- Panel state setting
-        PanelManager:MakePopup()                        -- Updating the state of all panels
-        PanelManager:RemoveIgnorePanel( self )          -- Removing a panel from an ignore list
+        PanelManager:SetFocusPanel( self )  -- Set focus to the panel when pressed
     end
    
     local InfoButtonYes = vgui.Create( "DButton" )
